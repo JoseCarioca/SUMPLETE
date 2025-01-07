@@ -85,8 +85,8 @@ if isfield(cuadricula, 'BoundingBox')
         max_dist = sqrt(size(imagen,1)^2 + size(imagen,2)^2);
     
         lineas = houghlines(E, theta, rho,peaks,'FillGap',max_dist);
-      
-    
+        cuadricula = NaN;
+        if ~isempty(lineas)
     
            [~,i] = min(abs([lineas.theta]));
            imagen = imrotate(255-imagen,lineas(i).theta,'nearest','loose');
@@ -103,7 +103,9 @@ if isfield(cuadricula, 'BoundingBox')
         props = regionprops(bwareaopen(imdilate(imbinarize(imagen),ele),50),"BoundingBox","Area");
 
         [cuadricula,n] = encuentra_cuadriculav2(props,prod(size(imagen))); % n aproxima tam de tablero
-        
+        end
+
+
         if isfield(cuadricula, 'BoundingBox')
             bbox = cuadricula.BoundingBox;
             tamano_cuadricula = sqrt(n);
@@ -116,7 +118,7 @@ if isfield(cuadricula, 'BoundingBox')
         %%DENTRO DEL TABLERO Y GUARDARLO EN LA MATRIZ
 
        bw = imbinarize(imagen);
-       bw = bwareaopen(bw,floor(0.0004 * prod(size(bw))));
+       bw = bwareaopen(bw,floor(0.0003 * prod(size(bw))));
             imshow(bw,[]);
             hold on;
             rectangle('Position', [1,1,bbox(3),bbox(4)], 'EdgeColor', 'r', 'LineWidth', 2);
