@@ -1,4 +1,14 @@
 function sumplete_game
+
+    %iniciar audio
+    codebook = load("Codebooks.mat");
+    fs = 8000
+    audioRecorder = audiorecorder(fs, 16, 1);
+
+
+
+
+
     fig = uifigure('Name', 'Sumplete Game', 'Position', [100 100 550 650]);
     
     initial_panel = uipanel(fig, 'Position', [25 250 500 200]);
@@ -159,7 +169,7 @@ function sumplete_game
             'Position', [150, 130, 40, 30], 'Editable', 'off');
         
         uilabel(fig, 'Text', 'Row:', 'Position', [20, 70, 50, 30]);
-        
+       READ_NUMfet 
         rowFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 70, 60, 30], ...
             'ButtonPushedFcn', @(btn, event) fetchValue('row'));
         
@@ -260,6 +270,8 @@ function sumplete_game
     end
     
     function valid = isValidMove(row, col)
+
+        if ~game_data.crossed(row,col)
         x_marked = game_data.crossed(row,:) == 1;
         y_marked = game_data.crossed(:,col) == 1;
 
@@ -269,7 +281,9 @@ function sumplete_game
                 col >= 1 && col <= (game_data.N-1) && ...
                 (sum_x + game_data.board(row,col)) <= game_data.board(row,game_data.N) && ...
                 (sum_y + game_data.board(row,col))<= game_data.board(game_data.N,col);
-
+        else
+            valid = 1;
+        end
 
         if ~valid
             uialert(fig, 'Invalid move!', 'Error');
@@ -294,8 +308,8 @@ function sumplete_game
     function checkWinCondition()
         original_board = game_data.board(1:end-1, 1:end-1);
         
-        row_sums = sum(original_board .* ~game_data.crossed, 2);
-        col_sums = sum(original_board .* ~game_data.crossed, 1)';
+        row_sums = sum(original_board .* game_data.crossed, 2);
+        col_sums = sum(original_board .* game_data.crossed, 1)';
         
         target_row_sums = game_data.board(1:end-1, end);
         target_col_sums = game_data.board(end, 1:end-1)';
