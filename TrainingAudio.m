@@ -53,7 +53,6 @@ end
 save("Observaciones.mat",'-struct',"TRAMAS")
 save("Codebooks.mat",'-struct','CODEBOOKNum')
 
-nombreCLASES = fieldnames(Observaciones); %nombre del campo que guarda la estrucutra 
 %inicializamos celdas para guardar A y B 
 A = cell(length(K),length(numeros),length(N)); 
 B = cell(length(K),length(numeros),length(N)); 
@@ -64,8 +63,8 @@ for NUM = 1:length(N)
     for k = 1:length(K) %por cada numero de centroides
 
         for n = 1:length(numeros)
-            codebook = Codebooks.("cbook"+numeros(n)+"_"+K(k));
-            observacion = Observaciones.("tr"+numeros(n));
+            codebook = CODEBOOKNum.("cbook"+numeros(n)+"_"+K(k));
+            observacion = TRAMAS.("tr"+numeros(n));
             [A{k,n,NUM},B{k,n,NUM}] = HMM(N(NUM),codebook,observacion);
 
         end
