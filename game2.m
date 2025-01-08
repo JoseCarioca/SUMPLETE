@@ -134,24 +134,50 @@ function sumplete_game
         uibutton(game_data.game_panel, 'Text', 'Ask for help', ...
             'Position', [270 10 200 30], ...
             'ButtonPushedFcn', @helpClick);
+
+        checkWinCondition();
+
+
     end
     
     function cellClicked(row, col)
-        if isValidMove(row, col)
-            game_data.crossed(row, col) = ~game_data.crossed(row, col);
-            updateBoard();
-            checkWinCondition();
+        if row < game_data.N && col < game_data.N
+            if game_data.crossed(row, col)%check if its already crossed
+    
+                game_data.crossed(row, col) = ~game_data.crossed(row, col);
+                updateBoard();
+                
+            elseif isValidMove(row, col)
+    
+                game_data.crossed(row, col) = ~game_data.crossed(row, col);
+                updateBoard();
+                checkWinCondition();
+            end
+
+        else
+            uialert(fig, 'Invalid move!', 'Error');
         end
     end
     
-    function webcamMove(~,~)
-        [x, y] = IMAGE_MOVE(); % TODO
-        if isValidMove(x, y)
-            game_data.crossed(x, y) = ~game_data.crossed(x, y);
-            updateBoard();
-            checkWinCondition();
+   function webcamMove(~,~)
+    % Primer número
+    x = READ_NUMBER();
+    %uialert(fig, sprintf('The number read is %i', x), "Success", 'Icon', 'success');
+
+    % Confirmación para continuar
+    choice = uiconfirm(fig, sprintf('The number read is %i , is it correct?', x), ...
+        'Continue?', 'Options', {'Yes', 'No'});
+    
+    if strcmp(choice, 'Yes')
+        y = READ_NUMBER();
+        choice = uiconfirm(fig, sprintf('The number read is %i , is it correct?', y), ...
+        'Continue?', 'Options', {'Yes', 'No'});
+
+        if strcmp(choice, 'Yes')
+            cellClicked(x, y);
         end
     end
+end
     
     function voiceMove(~,~)
         [x, y] = VOICE_MOVE(); % TODO
@@ -177,8 +203,17 @@ function sumplete_game
     end
     
     function valid = isValidMove(row, col)
+        x_marked = game_data.crossed(row,:) == 1;
+        y_marked = game_data.crossed(:,col) == 1;
+
+        sum_x = sum(game_data.board(row,x_marked));
+        sum_y = sum(game_data.board(y_marked,col));
         valid = row >= 1 && row <= (game_data.N-1) && ...
-                col >= 1 && col <= (game_data.N-1);
+                col >= 1 && col <= (game_data.N-1) && ...
+                (sum_x + game_data.board(row,col)) <= game_data.board(row,game_data.N) && ...
+                (sum_y + game_data.board(row,col))<= game_data.board(game_data.N,col);
+
+
         if ~valid
             uialert(fig, 'Invalid move!', 'Error');
         end
@@ -202,8 +237,8 @@ function sumplete_game
     function checkWinCondition()
         original_board = game_data.board(1:end-1, 1:end-1);
         
-        row_sums = sum(original_board .* ~game_data.crossed, 2);
-        col_sums = sum(original_board .* ~game_data.crossed, 1)';
+        row_sums = sum(original_board .* game_data.crossed, 2);
+        col_sums = sum(original_board .* game_data.crossed, 1)';
         
         target_row_sums = game_data.board(1:end-1, end);
         target_col_sums = game_data.board(end, 1:end-1)';
