@@ -14,7 +14,7 @@ tiempoDesplTrama = longDespTrama/Fs;
 longVentanaDelta = 5; %Nº de tramas utilizadas para calcular los coeficientes delta y delta-delta
 numCepstrum = 13;
 
-tamTest = 0.7; %seprar datos de validacion % de los datos
+tamTest = 0.5; %seprar datos de validacion % de los datos
 K_values = [64 128 256];
 
 %% leer datos

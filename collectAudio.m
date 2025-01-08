@@ -5,8 +5,7 @@
 % - seconds: Duración de la grabación en segundos.
 % Salida:
 % - audioData: Vector que contiene los datos de la señal de audio grabada.
-
-function [audioData] = collectAudio(audioRecorder, seconds)
+function audioData = collectAudio(audioRecorder, seconds)
 
     % Mostrar mensaje al usuario indicando que hable en 1 segundo.
     disp('Hable en 1 segundo...');
