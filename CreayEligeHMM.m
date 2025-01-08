@@ -1,6 +1,7 @@
 %% Recoge los archivos de audio encontrados en el directorio,
 %% extrae sus características y crea los codebooks para cada palabra (y diferente K).
 %% Parámetros
+%% NO USAR SI NO ES NECESARIO (los entrenamientos ya estan guardados)
 clc, close all, clear all,
 Fs = 8000;
 a = 0.95;

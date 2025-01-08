@@ -1,6 +1,6 @@
 %% real time validation for A and B matrix
 load("combinedHMM.mat");
-
+load("Codebooks.mat");
 prueba = false; % want to test with all data?
 
 Fs = 8000; % Sampling frequency (8 kHz)
