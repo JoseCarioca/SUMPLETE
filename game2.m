@@ -145,20 +145,103 @@ function sumplete_game
     end
     
     function webcamMove(~,~)
-        [x, y] = IMAGE_MOVE(); % TODO
-        if isValidMove(x, y)
-            game_data.crossed(x, y) = ~game_data.crossed(x, y);
-            updateBoard();
-            checkWinCondition();
+        fig = uifigure('Name', 'Camera selection', 'Position', [500, 300, 300, 200]);
+        
+        rowValue = 1;
+        colValue = 1;
+        
+        uilabel(fig, 'Text', 'Column:', 'Position', [20, 130, 50, 30]);
+        
+        colFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 130, 60, 30], ...
+            'ButtonPushedFcn', @(btn, event) fetchValue('col'));
+        
+        colIndicator = uieditfield(fig, 'numeric', 'Value', colValue, ...
+            'Position', [150, 130, 40, 30], 'Editable', 'off');
+        
+        uilabel(fig, 'Text', 'Row:', 'Position', [20, 70, 50, 30]);
+        
+        rowFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 70, 60, 30], ...
+            'ButtonPushedFcn', @(btn, event) fetchValue('row'));
+        
+        rowIndicator = uieditfield(fig, 'numeric', 'Value', rowValue, ...
+            'Position', [150, 70, 40, 30], 'Editable', 'off');
+        
+        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [100, 20, 100, 30], ...
+            'ButtonPushedFcn', @(btn, event) confirmSelection());
+        
+        % READ_NUMBER handler
+        function fetchValue(type)
+            fetchedValue = READ_NUMBER();
+            if strcmp(type, 'col')
+                colValue = fetchedValue;
+                colIndicator.Value = colValue;
+            elseif strcmp(type, 'row')
+                rowValue = fetchedValue;
+                rowIndicator.Value = rowValue;
+            end
+        end
+    
+        function confirmSelection()
+            x = rowValue;
+            y = colValue;
+            
+            if isValidMove(x, y)
+                game_data.crossed(x, y) = ~game_data.crossed(x, y);
+                updateBoard();
+                checkWinCondition();
+                close(fig);
+            end
         end
     end
+
     
     function voiceMove(~,~)
-        [x, y] = VOICE_MOVE(); % TODO
-        if isValidMove(x, y)
-            game_data.crossed(x, y) = ~game_data.crossed(x, y);
-            updateBoard();
-            checkWinCondition();
+        fig = uifigure('Name', 'Camera selection', 'Position', [500, 300, 300, 200]);
+        
+        rowValue = 1;
+        colValue = 1;
+        
+        uilabel(fig, 'Text', 'Column:', 'Position', [20, 130, 50, 30]);
+        
+        colFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 130, 60, 30], ...
+            'ButtonPushedFcn', @(btn, event) fetchValue('col'));
+        
+        colIndicator = uieditfield(fig, 'numeric', 'Value', colValue, ...
+            'Position', [150, 130, 40, 30], 'Editable', 'off');
+        
+        uilabel(fig, 'Text', 'Row:', 'Position', [20, 70, 50, 30]);
+        
+        rowFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 70, 60, 30], ...
+            'ButtonPushedFcn', @(btn, event) fetchValue('row'));
+        
+        rowIndicator = uieditfield(fig, 'numeric', 'Value', rowValue, ...
+            'Position', [150, 70, 40, 30], 'Editable', 'off');
+        
+        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [100, 20, 100, 30], ...
+            'ButtonPushedFcn', @(btn, event) confirmSelection());
+        
+        % HEAR_NUMBER handler
+        function fetchValue(type)
+            fetchedValue = HEAR_NUMBER();
+            if strcmp(type, 'col')
+                colValue = fetchedValue;
+                colIndicator.Value = colValue;
+            elseif strcmp(type, 'row')
+                rowValue = fetchedValue;
+                rowIndicator.Value = rowValue;
+            end
+        end
+    
+        function confirmSelection()
+            x = rowValue;
+            y = colValue;
+            
+            if isValidMove(x, y)
+                game_data.crossed(x, y) = ~game_data.crossed(x, y);
+                updateBoard();
+                checkWinCondition();
+                close(fig);
+            end
         end
     end
 
@@ -177,8 +260,17 @@ function sumplete_game
     end
     
     function valid = isValidMove(row, col)
+        x_marked = game_data.crossed(row,:) == 1;
+        y_marked = game_data.crossed(:,col) == 1;
+
+        sum_x = sum(game_data.board(row,x_marked));
+        sum_y = sum(game_data.board(y_marked,col));
         valid = row >= 1 && row <= (game_data.N-1) && ...
-                col >= 1 && col <= (game_data.N-1);
+                col >= 1 && col <= (game_data.N-1) && ...
+                (sum_x + game_data.board(row,col)) <= game_data.board(row,game_data.N) && ...
+                (sum_y + game_data.board(row,col))<= game_data.board(game_data.N,col);
+
+
         if ~valid
             uialert(fig, 'Invalid move!', 'Error');
         end
