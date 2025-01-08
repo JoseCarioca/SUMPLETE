@@ -39,10 +39,7 @@ function [A,B] = HMM(N,codebook,tramas)
     
         %Normalizar las filas de B0
         B0 = B0 ./ sum(B0, 2);
-        %sum(B0,2)
         
-        %[Aaux,Baux,secuencia] = initializeHMM(X, codebook, N);
-        %estimacion = hmmviterbi(secuencia,A0,B0);
         [Aaux,Baux] = hmmtrain(secuencia,A0,B0,'Maxiterations',1500,'Tolerance',1e-6);
         A = A + Aaux;
         B = B + Baux;

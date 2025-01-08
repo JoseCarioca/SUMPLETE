@@ -1,5 +1,5 @@
 function sumplete_game
-
+clear all,clc
     %iniciar audio
     codebook = load("Codebooks.mat");
     HMM = load("combinedHMM.mat");
@@ -255,9 +255,9 @@ function sumplete_game
 
             sample = collectAudio(audioRecorder, 1.5);
 
-            obj_senal = audioplayer(10*sample,Fs); % aumento para escuchar mejor
-            play(obj_senal);
-            pause (1.5);
+            % obj_senal = audioplayer(10*sample,Fs); % aumento para escuchar mejor
+            % play(obj_senal);
+            % pause (1.5);
             
             number = estimateDigitVoice(HMM.A,HMM.B,codebook,sample,Fs);
 

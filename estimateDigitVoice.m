@@ -32,6 +32,8 @@ K = [64 128 256];
     
     end
 
+     % disp("K x N:");
+     % disp(cifraDetectada);
     estimacion = mode(cifraDetectada(cifraDetectada > 0));
 
 end
