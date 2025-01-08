@@ -13,7 +13,7 @@ longVentanaDelta = 5; %Nº de tramas utilizadas para calcular los coeficientes d
 numCepstrum = 13;
 
 tamTest = 0.15; %seprar datos de validacion % de los datos
-
+numeros = [1 2 3 4 5 6 7 8 9];
 %% leer datos
 folders = dir();
 folders = folders([folders.isdir]);
