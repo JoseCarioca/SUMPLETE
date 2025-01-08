@@ -3,13 +3,14 @@
 function estimacion = estimateDigitVoice(A,B,Codebooks,audioData,Fs)
 [nk, nNums, nN] = size(A);
 cifraDetectada = zeros(nk, nN);
+K = [64 128 256];
 
 % Preproceso
     caracteristicas = recogerCaracterisitcas(audioData,Fs);
     
     for k = 1:nk %por cada numero de centroides
         for NUM = 1:nN
-            logsP = zeros(1,length(numeros)) - Inf;
+            logsP = zeros(1,nNums) - Inf;
             for n = 1:nNums
                 codebook = Codebooks.("cbook"+(n)+"_"+K(k));
                 secuencia = asignarCentroide(caracteristicas,codebook);

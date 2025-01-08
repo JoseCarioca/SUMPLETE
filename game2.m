@@ -2,10 +2,11 @@ function sumplete_game
 
     %iniciar audio
     codebook = load("Codebooks.mat");
-    fs = 8000
-    audioRecorder = audiorecorder(fs, 16, 1);
-
-
+    HMM = load("combinedHMM.mat");
+    Fs = 8000;
+    audioRecorder = audiorecorder(Fs, 16, 1);
+    global stopExecution;
+    stopExecution = false;
 
 
 
@@ -159,6 +160,7 @@ function sumplete_game
         
         rowValue = 1;
         colValue = 1;
+        stopExecution = false;  % Flag to control execution
         
         uilabel(fig, 'Text', 'Column:', 'Position', [20, 130, 50, 30]);
         
@@ -169,15 +171,19 @@ function sumplete_game
             'Position', [150, 130, 40, 30], 'Editable', 'off');
         
         uilabel(fig, 'Text', 'Row:', 'Position', [20, 70, 50, 30]);
-       READ_NUMfet 
+       %READ_NUMfet 
         rowFetchButton = uibutton(fig, 'Text', 'Fetch', 'Position', [80, 70, 60, 30], ...
             'ButtonPushedFcn', @(btn, event) fetchValue('row'));
         
         rowIndicator = uieditfield(fig, 'numeric', 'Value', rowValue, ...
             'Position', [150, 70, 40, 30], 'Editable', 'off');
         
-        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [100, 20, 100, 30], ...
+        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [40, 20, 100, 30], ...
             'ButtonPushedFcn', @(btn, event) confirmSelection());
+
+        exitButton = uibutton(fig, 'Text', 'Exit', 'Position', [160, 20, 100, 30], ...
+        'ButtonPushedFcn', @(btn, event) exitApp());
+
         
         % READ_NUMBER handler
         function fetchValue(type)
@@ -202,6 +208,14 @@ function sumplete_game
                 close(fig);
             end
         end
+
+        % Function to exit the app
+    function exitApp()
+        stopExecution = true;  % Set flag to stop execution
+        close(fig);            % Close the figure
+    end
+
+
     end
 
     
@@ -227,17 +241,31 @@ function sumplete_game
         rowIndicator = uieditfield(fig, 'numeric', 'Value', rowValue, ...
             'Position', [150, 70, 40, 30], 'Editable', 'off');
         
-        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [100, 20, 100, 30], ...
+        confirmButton = uibutton(fig, 'Text', 'Confirm', 'Position', [40, 20, 100, 30], ...
             'ButtonPushedFcn', @(btn, event) confirmSelection());
+
+            exitButton = uibutton(fig, 'Text', 'Exit', 'Position', [160, 20, 100, 30], ...
+        'ButtonPushedFcn', @(btn, event) close(fig));
+        
+
+
         
         % HEAR_NUMBER handler
         function fetchValue(type)
-            fetchedValue = HEAR_NUMBER();
+
+            sample = collectAudio(audioRecorder, 1.5);
+
+            obj_senal = audioplayer(10*sample,Fs); % aumento para escuchar mejor
+            play(obj_senal);
+            pause (1.5);
+            
+            number = estimateDigitVoice(HMM.A,HMM.B,codebook,sample,Fs);
+
             if strcmp(type, 'col')
-                colValue = fetchedValue;
+                colValue = number;
                 colIndicator.Value = colValue;
             elseif strcmp(type, 'row')
-                rowValue = fetchedValue;
+                rowValue = number;
                 rowIndicator.Value = rowValue;
             end
         end
@@ -253,6 +281,10 @@ function sumplete_game
                 close(fig);
             end
         end
+
+        
+
+
     end
 
     function helpClick(~,~)
@@ -270,23 +302,18 @@ function sumplete_game
     end
     
     function valid = isValidMove(row, col)
-
-        if ~game_data.crossed(row,col)
-        x_marked = game_data.crossed(row,:) == 1;
-        y_marked = game_data.crossed(:,col) == 1;
-
-        sum_x = sum(game_data.board(row,x_marked));
-        sum_y = sum(game_data.board(y_marked,col));
-        valid = row >= 1 && row <= (game_data.N-1) && ...
-                col >= 1 && col <= (game_data.N-1) && ...
-                (sum_x + game_data.board(row,col)) <= game_data.board(row,game_data.N) && ...
-                (sum_y + game_data.board(row,col))<= game_data.board(game_data.N,col);
+        
+        if row >= 1 && row <= (game_data.N-1) && ...
+                col >= 1 && col <= (game_data.N-1)
+            
+                valid = 1;
         else
-            valid = 1;
+            valid = 0;
+
         end
 
         if ~valid
-            uialert(fig, 'Invalid move!', 'Error');
+            uialert(fig, 'Invalid move!', 'Error', 'Icon', 'error');
         end
     end
     
@@ -308,8 +335,8 @@ function sumplete_game
     function checkWinCondition()
         original_board = game_data.board(1:end-1, 1:end-1);
         
-        row_sums = sum(original_board .* game_data.crossed, 2);
-        col_sums = sum(original_board .* game_data.crossed, 1)';
+        row_sums = sum(original_board .* ~game_data.crossed, 2);
+        col_sums = sum(original_board .* ~game_data.crossed, 1)';
         
         target_row_sums = game_data.board(1:end-1, end);
         target_col_sums = game_data.board(end, 1:end-1)';

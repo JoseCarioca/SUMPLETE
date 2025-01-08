@@ -4,11 +4,17 @@ function number = READ_NUMBER()
     resolutions = cam.AvailableResolutions;  % Obtiene las resoluciones disponibles
     %disp(resolutions);
     cam.Resolution = resolutions{1};  % Establece la resolución más baja disponible
-
+    global stopExecution;
+    stopExecution = false;
     figure,  % Crea una figura para mostrar las imágenes procesadas
 
     while true  % Comienza un bucle infinito
+        if stopExecution
+            stopExecution = false;
+            close;
+            return;
 
+        end
         I = im2gray(cam.snapshot());  % Captura una imagen de la cámara y la convierte a escala de grises
         tama_imagen = prod(size(I));  % Calcula el tamaño total de la imagen
 
