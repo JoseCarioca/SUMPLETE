@@ -162,9 +162,9 @@ for iter = 1:20
         nombreCarpeta = num2str(real); % Convertir el número a cadena
         
         % Verificar si la carpeta existe, si no, crearla
-        if ~exist(nombreCarpeta, 'dir')
-            mkdir(nombreCarpeta);
-        end
+        % if ~exist(rutaDATA+nombreCarpeta, 'dir')
+        %     mkdir(rutaDATA+nombreCarpeta);
+        % end
         
         % Generar nombre único para el archivo de audio
         nombreArchivo = ['audio_' datestr(now, 'yyyymmdd_HHMMSS') '.wav']; % Ejemplo: audio_20250108_123456.wav
