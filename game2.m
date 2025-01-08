@@ -260,8 +260,17 @@ function sumplete_game
     end
     
     function valid = isValidMove(row, col)
+        x_marked = game_data.crossed(row,:) == 1;
+        y_marked = game_data.crossed(:,col) == 1;
+
+        sum_x = sum(game_data.board(row,x_marked));
+        sum_y = sum(game_data.board(y_marked,col));
         valid = row >= 1 && row <= (game_data.N-1) && ...
-                col >= 1 && col <= (game_data.N-1);
+                col >= 1 && col <= (game_data.N-1) && ...
+                (sum_x + game_data.board(row,col)) <= game_data.board(row,game_data.N) && ...
+                (sum_y + game_data.board(row,col))<= game_data.board(game_data.N,col);
+
+
         if ~valid
             uialert(fig, 'Invalid move!', 'Error');
         end
