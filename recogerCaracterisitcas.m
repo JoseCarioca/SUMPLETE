@@ -25,8 +25,8 @@ function vectorCaracteristicas = recogerCaracterisitcas(senal,F_old)
     tramasPalabra = recortaTrama(tramas); %nos quedamos con las tramas de la palabra
     
     %% uncomment if wanted
-    %palabra = invSegmentacion(tramasPalabra,longDespTrama);
-    %figure(1), plot(palabra); title("palabra recogida"); % para comprobar
+    % palabra = invSegmentacion(tramasPalabra,longDespTrama);
+    % figure(1), plot(palabra); title("palabra recogida"); % para comprobar
 
     %Obtención de las ventana enventanadas
     tramasPalabra = enventanar(tramasPalabra,ventana);
