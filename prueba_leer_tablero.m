@@ -1,1 +1,0 @@
-disp(READ_BOARD());
